@@ -1,0 +1,20 @@
+
+
+
+<mat-expansion-panel expanded>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Edit JSON Schema avneet
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <lib-json-schema-form [(value)]="value" [schema]="schema" [label]="schema.title"></lib-json-schema-form>
+</mat-expansion-panel>
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            View and Edit Resulting Schema
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <textarea rows="15" style="width: 100%" [value]="stringify(value)" (change)="change($event)"></textarea>
+    {{error}}
+</mat-expansion-panel>

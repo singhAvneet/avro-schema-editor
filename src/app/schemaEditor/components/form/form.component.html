@@ -1,0 +1,90 @@
+<form [formGroup]="formdata" class="row form" (change)="onClickSubmit(formdata.value)">
+    <div class="mb-3 col-12">
+        <span *ngFor="let obj of path">> {{obj}} </span>
+    </div>
+    <div class="mb-3 col-2">
+        <label for="name" class="form-label">name</label>
+    </div>
+    <div class="mb-3 col-10">
+        <input type="text" class="fortextbox" name="name" placeholder="" class="form-control" formControlName="nameid">
+    </div>
+
+
+
+    <div class="mb-3 col-2">
+        <label for="doc" class="form-label">doc</label>
+    </div>
+    <div class="mb-3 col-10">
+        <textarea type="textArea" class="fortextbox" name="doc" placeholder="" class="form-control"
+            formControlName="docid"></textarea>
+    </div>
+
+
+
+    <div class="mb-3 col-2">
+        <label for="name" class="form-label">type</label>
+    </div>
+    <div class="mb-3 col-10">
+
+        <!-- <div *ngFor="let obj of type">
+            <select class="form-select" (ngModelChange)="onDataTypeChange()">
+                <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}}</option>
+            </select>
+        </div> -->
+
+        <select class="form-select"  formControlName="typeid" (ngModelChange)="onDataTypeChange()">
+            <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}}</option>
+        </select>
+
+
+
+    </div>
+
+
+    <div class="mb-3 col-2" *ngIf="type=='array'">
+        <label for="name" class="form-label">item</label>
+    </div>
+    <div class="mb-3 col-10" *ngIf="type=='array'">
+
+        <select class="form-select" formControlName="itemid">
+            <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}}</option>
+        </select>
+
+    </div>
+
+
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" placeholder="" formControlName="defaultid">
+        <label class="form-check-label" for="default">default</label>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" (click)="onCheckboxChange($event)" formControlName="nullid">
+
+        <label class="form-check-label" for="null">null</label>
+    </div>
+
+
+    <a type="button" class="btn-link " value="Add Properties" width="auto" (click)="addProperties()">Add Properties</a>
+
+    <div *ngFor="let obj of customProp | keyvalue  ; let n = index" class="row" (change)="onChange(obj.key,$event)">
+
+
+        <div class="mb-3 col-4">
+            <input type="text" class="fortextbox" name="key{{n}}" placeholder="" value="{{obj.key}}"
+                class="form-control">
+        </div>
+        <div class="mb-3 col-5">
+            <input type="text" class="fortextbox" name="value{{n}}" placeholder="" value="{{obj.value}}"
+                class="form-control">
+        </div>
+        <div class="mb-3 col-1 btn-link" (click)="removeProperties(obj.key)">
+            <a>remove</a>
+        </div>
+    </div>
+
+
+
+
+</form>

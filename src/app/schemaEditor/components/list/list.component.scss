@@ -1,0 +1,21 @@
+#accordionExample{  
+    width: fit-content;
+    .accordion-item {
+    border: none;
+  
+    .accordion-button:focus,.accordion-button,.accordion-button:not(.collapsed){
+        padding: 1%;
+        background-color: #e7f1ff;
+        box-shadow: none;
+        min-width:20em
+    }
+
+        }
+    
+    }
+
+
+
+ .highlight{
+     background-color: rgb(212, 230, 213);
+ }

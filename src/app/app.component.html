@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="row">
+        <div class="col-5 accord" >
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Default file input example</label>
+                <input type="file" class="form-control" (change)="fileChanged($event)">
+            </div>
+
+
+            <span class="badge rounded-pill bg-success" (click)="addNewField()">Add</span>
+            <span class="badge rounded-pill bg-danger" (click)="removeField(schemas,1)">Remove</span>
+            <app-accordian [schemas]="schemas" [path]="path"></app-accordian>
+
+           {{error}}
+        </div>
+        <div class="col-4 right">
+            <app-form></app-form>
+        </div>
+        <div class="col-3 right">
+            <pre>
+                <p>{{schemas | json}}</p>
+            </pre>
+        </div>
+
+
+
+
+    </div>
+</div>

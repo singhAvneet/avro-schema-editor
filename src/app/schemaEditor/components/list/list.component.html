@@ -1,0 +1,87 @@
+<div *ngIf="getTypeof(schemas.type)=='object' ; else showNativeFields">
+    <div *ngIf="isArray(schemas.type)">
+        <div *ngFor="let obj of schemas.type  ; let n = index">
+            <div *ngIf="getTypeof(obj)=='object'  ; else elseBlock1">
+                <div *ngIf="obj.type=='record' ; else elseBlock2">
+
+
+
+
+                    <div *ngIf="hide">
+                        <div class="accordion-item" id="accordionExample">
+                            <div class="accordion-item">
+                                <a class=" accordion-button" data-bs-toggle="collapse"
+                                    href="#collapseExample{{path[path.length-1]}}{{id}}" role="button"
+                                    aria-expanded="false">
+                                    <div (click)="emitSchema(schemas)"> {{schemas.name}} {{actualTypes }} </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="collapse" id="collapseExample{{path[path.length-1]}}{{id}}">
+                            <app-accordian [schemas]="obj" [path]="currentPath"></app-accordian>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+                </div>
+                <ng-template #elseBlock2>
+                    <div *ngIf="obj.type=='array' ">
+                        <div *ngIf="getTypeof(obj.items)=='object'">
+                            <div *ngIf="obj.items.type=='record' ">
+
+
+
+
+                                <div *ngIf="hide">                                  
+                                  
+                                            <div class="accordion-item" id="accordionExample">
+                                                <div class="accordion-item">
+                                                    <a class=" accordion-button" data-bs-toggle="collapse"
+                                                        href="#collapseExample{{path[path.length-1]}}{{id}}"
+                                                        role="button" aria-expanded="false">
+                                                        <div (click)="emitSchema(schemas)"> {{schemas.name}}  {{actualTypes }}  </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="collapse" id="collapseExample{{path[path.length-1]}}{{id}}">
+                                                <app-accordian [schemas]="obj.items" [path]="currentPath">    </app-accordian>
+                                            </div>                                     
+                                    
+                                </div>
+
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+            <ng-template #elseBlock1>
+                <div *ngIf="n==0  && !hide " (click)="emitSchema(schemas)" [ngClass]="highlight ? 'highlight' : '' ">
+                    {{schemas.name}} {{actualTypes }}
+                    <!-- <span class="badge rounded-pill bg-secondary">X</span> -->
+                </div>
+
+
+
+
+
+            </ng-template>
+        </div>
+    </div>
+    <div *ngIf="schemas.type.type=='record' ">
+        <app-accordian [schemas]="schemas.type" [path]="currentPath"></app-accordian>
+    </div>
+</div>
+<ng-template #showNativeFields>
+    <div [ngClass]="highlight ? 'highlight' : '' " (click)="emitSchema(schemas)">{{schemas.name}} {{actualTypes }}
+        <!-- <span class="badge rounded-pill bg-secondary">X</span> -->
+    </div>
+</ng-template>

@@ -1,0 +1,11 @@
+<div class="accordion-item" id="accordionExample">
+    <div class="accordion-item">
+        <a class=" accordion-button" data-bs-toggle="collapse" href="#collapseExample{{path[path.length-1]}}{{id}}" role="button"
+            aria-expanded="false">
+            <div> {{schemas.name}}<span>[{{schemas.type}}]</span>     </div>
+        </a>
+        <div class="collapse" id="collapseExample{{path[path.length-1]}}{{id}}">
+            <app-schema-edit [schemas]="schemas"  [path]="path"></app-schema-edit>          
+        </div>
+    </div>
+</div>

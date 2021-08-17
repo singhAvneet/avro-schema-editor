@@ -1,0 +1,11 @@
+
+    <div ng-controller="MainCtrl" class="list-group">
+      
+        <ul>
+            <!-- <li class="badge rounded-pill bg-success" (click)="addNewField()">Add Field</li> -->
+            <li  *ngFor="let schema of schemas.fields  ; let n = index">
+                <app-list [schemas]="schema" [path]="path"></app-list>               
+            </li>
+        </ul>              
+        
+    </div>
