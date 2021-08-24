@@ -82,7 +82,7 @@ export class AppComponent implements ErrorHandler {
     // var path=this.path.pop;
     this.store.dispatch({
       type: 'EMIT',
-      payload: { type: 'EMIT', path: path, new: true, node: {} }
+      payload: { type: 'EMIT', path: path, new: true, node: {type:"default"} }
     });
   }
 

@@ -25,6 +25,6 @@ export const totalTypes = [
     "enum",
     "array",
     "map",
-    "nul",
-    "bytes"
+    "bytes",
+    ""
 ];

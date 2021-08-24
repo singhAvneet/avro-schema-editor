@@ -1,9 +1,8 @@
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
-import { Record, totalTypes, GMS } from '../../modal/interface'
+import { Component } from "@angular/core";
+import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { totalTypes } from '../../modal/interface'
 import { select, Store } from '@ngrx/store';
-import { CompileShallowModuleMetadata } from "@angular/compiler";
 
 
 
@@ -20,13 +19,16 @@ export class FormComponent {
   type: any;
   deleteKey = [];
   deleteKeyCount = 0;
-  formdata;
+  formdata: FormGroup;
   customProp = {};
   path: Array<string>;
   arrayItem;
   schemaType;
   newField = false;
-  constructor(private store: Store<any>) { }
+  isOptional = false;
+  isNewRecord = false;
+
+  constructor(private store: Store<any>, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.store.pipe(select('node')).subscribe(
@@ -38,36 +40,41 @@ export class FormComponent {
             this.path = domain.path
             this.newField = domain.new
           }
-
-
-
         }
-
+        // this.isNewRecord = false;
       }
     );
-    this.formdata = new FormGroup({
+    this.formdata = this.fb.group({
       nameid: new FormControl(),
       docid: new FormControl(),
-      typeid: new FormControl(),
       defaultid: new FormControl(),
+      typeid: new FormArray([]),
       nullid: new FormControl(),
       keyid: new FormControl(),
       valueid: new FormControl(),
+      newRecordType: new FormGroup({})
     });
+
 
   }
 
-  onChangeInit(schema) {
 
+
+
+  onChangeInit(schema) {
+    this.type = new Array<string>()
+    this.isOptional = false
     this.customProp = this.getCustomeProperties(schema);
     this.schemaType = schema.type;
     if (typeof schema.type == "object") {
       if (this.isArray(schema.type)) {
-       
+
         schema.type.forEach((element, n) => {
+          if (element == 'null')
+            this.isOptional = true
           if (element != 'null') {
             if (typeof element == "object") {
-              this.type = element.type;
+              this.type.push(element.type);
               if (element.type == 'array') {
                 if (typeof element.items == 'object') {
                   this.arrayItem = element.items.type
@@ -76,25 +83,44 @@ export class FormComponent {
                 }
               }
             } else {
-              this.type =element;
+              this.type.push(element);
             }
           }
         });
       } else {
-        this.type = schema.type.type
+        this.type.push(schema.type.type)
       }
 
     } else {
-      this.type = schema.type
+      this.type.push(schema.type)
     }
+
     this.formdata = new FormGroup({
       nameid: new FormControl(schema.name),
       docid: new FormControl(schema.doc),
-      typeid: new FormControl(this.type),
+      typeid: new FormGroup(
+        {
+          string: new FormControl(this.type.find(a => a.includes("string"))),
+          int: new FormControl(this.type.find(a => a.includes("int"))),
+          boolean: new FormControl(this.type.find(a => a.includes("boolean"))),
+          long: new FormControl(this.type.find(a => a.includes("long"))),
+          double: new FormControl(this.type.find(a => a.includes("double"))),
+          array: new FormControl(this.type.find(a => a.includes("array"))),
+          record: new FormControl(this.type.find(a => a.includes("record"))),
+          default: new FormControl(''),
+        }
+      ),
       defaultid: new FormControl(schema.default),
-      nullid: new FormControl(this.isArray(schema.type) ? true : false),
-      itemid: new FormControl(this.arrayItem)
+      nullid: new FormControl(this.isOptional),
+      itemid: new FormControl(this.arrayItem),
+      newRecordType: this.fb.group({
+        type: "record",
+        name: new FormControl(''),
+        doc: new FormControl(''),
+        fields: new FormArray([])
+      })
     });
+
   }
 
 
@@ -128,6 +154,7 @@ export class FormComponent {
       this.path.forEach((v, i) => {
         if (i == this.path.length - 1) {
           newPath.push(field.name)
+
           this.store.dispatch({
             type: 'EMIT',
             payload: { type: 'EMIT', path: newPath, new: false, node: field }
@@ -139,12 +166,13 @@ export class FormComponent {
   }
 
   getEvaluteField(data): any {
+
     var field: any = {};
     this.evaluteTypeField(data.nullid);
     if (data.nameid)
       field.name = data.nameid;
-    if (data.typeid)
-      field.type = data.typeid == 'record' || data.typeid === 'array' ? this.schemaType : this.type;
+    if (data)
+      field.type = this.type == 'record' || this.type === 'array' ? this.schemaType : this.type;
     if (data.docid)
       field.doc = data.docid
     this.setCustomeProperties(field);
@@ -155,18 +183,25 @@ export class FormComponent {
     this.evaluteTypeField(e.target.checked);
   }
 
-  onDataTypeChange() {
+  onDataTypeChange(neu, old) {
+    if (neu == 'record') {
+      this.isNewRecord = true;
+      neu = this.formdata.value.newRecordType
+    }
+    this.type = this.type.filter(e => e !== old); //discarding 'old' values from the array
+    this.type.push(neu)
     this.evaluteTypeField(this.formdata.value.nullid);
+ 
 
   }
 
   evaluteTypeField(condition: boolean) {
     if (condition) {
-      this.type = new Array('null');
-      this.type[1] = this.formdata.value.typeid
-    } else {
-      this.type = this.formdata.value.typeid
+      this.type.push("null")
     }
+    this.type = this.type.filter(function (elem, index, self) { // removing duplicate values
+      return index === self.indexOf(elem);
+    })
   }
 
   getCustomeProperties(schema: any): any {
@@ -210,7 +245,7 @@ export class FormComponent {
         }
       }
     }
-    console.log(this.customProp)
+
   }
 
 
@@ -223,12 +258,22 @@ export class FormComponent {
       this.onClickSubmit(this.formdata.value)
   }
 
-  // addNewField(){
-  //   this.store.dispatch({
-  //     type: 'ADD',
-  //     payload: { type: 'ADD', path: this.path, node:this.getEvaluteField(this.formdata.value)}
-  //   });
-  // }
+
+
+  addType() {
+    this.type.push("long")
+  }
+
+
+  removeType(obj: number) {
+    this.type.splice(obj, 1)
+    this.onClickSubmit(this.formdata.value)
+  }
+
+
+  getTypeof(obj:any){
+return typeof(obj)
+  }
 
 
 }

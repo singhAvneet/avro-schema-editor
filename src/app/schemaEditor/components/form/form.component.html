@@ -21,30 +21,64 @@
 
 
 
-    <div class="mb-3 col-2">
-        <label for="name" class="form-label">type</label>
+
+    <div *ngFor="let obj of type; let i = index" >
+        <div *ngIf="getTypeof(obj)=='string' " class="row">
+            <div class="mb-3 col-2">
+                <label for="name" class="form-label" *ngIf="i < 1">type</label>
+            </div>
+            <div class="mb-3 col-8">
+                <div formGroupName="typeid">
+                    <select *ngIf="obj!='null'" class="form-select" (ngModelChange)="onDataTypeChange($event,obj)"
+                        formControlName="{{obj}}">
+                        <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}} </option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 col-2 row">
+                <div class="row">
+
+                    <div class="mb-3 col-10">
+                        <span>
+                            <span class="badge  ">
+                                <span *ngIf="i < 1" class="rounded-pill bg-success" (click)="addType()">+</span>&nbsp;
+                                <span *ngIf="i > 0" class="rounded-pill bg-danger" (click)="removeType(i)">-</span>
+                            </span>
+
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
-    <div class="mb-3 col-10">
-
-        <!-- <div *ngFor="let obj of type">
-            <select class="form-select" (ngModelChange)="onDataTypeChange()">
-                <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}}</option>
-            </select>
-        </div> -->
-
-        <select class="form-select"  formControlName="typeid" (ngModelChange)="onDataTypeChange()">
-            <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}}</option>
-        </select>
 
 
-
+    <div *ngIf="isNewRecord" formGroupName="newRecordType">
+        <div class="mb-3 col-2">
+            <label for="name" class="form-label">name</label>
+        </div>
+        <div class="mb-3 col-10">
+            <input type="text" class="fortextbox" name="name" placeholder="" class="form-control"
+                formControlName="name">
+        </div>
+        <div class="mb-3 col-2">
+            <label for="name" class="form-label">doc</label>
+        </div>
+        <div class="mb-3 col-10">
+            <input type="text" class="fortextbox" name="name" placeholder="" class="form-control" formControlName="doc">
+        </div>
+        <div class="mb-3 col-2">
+            <label for="name" class="form-label">fieldName</label>
+        </div>
     </div>
-
 
     <div class="mb-3 col-2" *ngIf="type=='array'">
         <label for="name" class="form-label">item</label>
     </div>
-    <div class="mb-3 col-10" *ngIf="type=='array'">
+    <div class="mb-3 col-8" *ngIf="type=='array'">
 
         <select class="form-select" formControlName="itemid">
             <option *ngFor="let t of totalTypes" [ngValue]="t">{{t}}</option>
@@ -88,3 +122,10 @@
 
 
 </form>
+
+
+
+
+
+{{this.formdata.value.typeid | json}}
+{{this.type | json}}
